@@ -38,17 +38,34 @@ class App {
         channel.consume("orders", async (data) => {
           // Consume messages from the order queue on buy
           console.log("Consuming ORDER service");
-          const { products, username, orderId } = JSON.parse(data.content);
+          const { products, username, orderId, createdDate } = JSON.parse(data.content);
   
           const newOrder = new Order({
             products,
-            user: username,
-            totalPrice: products.reduce((acc, product) => acc + product.price, 0),
+            user: username || 'guest',
+            totalPrice: products.reduce((acc, product) => acc + product.price * product.quantity, 0),
           });
-  
-          // Save order to DB
+          
+          //check o day
+          const currentDate = new Date();
+          const orderedDate = new Date(createdDate);
+          let khoangThoiGian = currentDate - orderedDate;
+          khoangThoiGian = khoangThoiGian / (1000 * 60 * 60)
+          if (khoangThoiGian > 24) {
+            const { user, products: savedProducts, totalPrice } = newOrder.toJSON();
+            channel.sendToQueue(
+              "products",
+              Buffer.from(JSON.stringify({ orderId, user, products: savedProducts, totalPrice, status:"failed" }))
+            );
+            channel.ack(data);
+            return;
+          }
+
+
+
+          //save order to DB
           await newOrder.save();
-  
+
           // Send ACK to ORDER service
           channel.ack(data);
           console.log("Order saved to DB and ACK sent to ORDER queue");
@@ -58,7 +75,7 @@ class App {
           const { user, products: savedProducts, totalPrice } = newOrder.toJSON();
           channel.sendToQueue(
             "products",
-            Buffer.from(JSON.stringify({ orderId, user, products: savedProducts, totalPrice }))
+            Buffer.from(JSON.stringify({ orderId, user, products: savedProducts, totalPrice, status:"completed" }))
           );
         });
       } catch (err) {

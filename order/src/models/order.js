@@ -15,6 +15,10 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  user: {
+    type: String,
+    required: true,
+  }
 }, { collection : 'orders' });
 
 const Order = mongoose.model('Order', orderSchema);
