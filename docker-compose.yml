@@ -1,0 +1,106 @@
+version: "3.9" 
+
+services :
+  nghiem_mongodb :
+    image: mongo:6.0        
+    container_name: nghiem_mongodb
+    ports:
+      - "27018:27017"         
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: lyhoangnghiem   
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+    volumes:
+      - nghiem_mongodb_data:/data/db       
+    restart: unless-stopped
+
+  nghiem_rabbitmq : 
+    image : rabbitmq:4-management
+    container_name: nghiem_rabbitmq
+    ports:
+      - "5672:5672"      # port cho ứng dụng backend (NodeJS, NestJS, v.v.)
+      - "15672:15672"    # port cho web UI quản lý RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - nghiem_rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  nghiem_api_gateway :
+    build: 
+      context: ./api-gateway   # thư mục chứa Dockerfile
+      dockerfile: Dockerfile  
+    container_name : nghiem_api_gateway
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./api-gateway:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nghiem_rabbitmq
+      - nghiem_mongodb
+    restart: unless-stopped
+
+  nghiem_auth_service : 
+    build: 
+      context: ./auth
+      dockerfile: Dockerfile
+    container_name : nghiem_auth_service
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./auth:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nghiem_rabbitmq
+      - nghiem_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
+    restart: unless-stopped
+
+  nghiem_order_service : 
+    build: 
+      context: ./order
+      dockerfile: Dockerfile
+    container_name : nghiem_order_service
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./order:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nghiem_rabbitmq
+      - nghiem_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
+    restart: unless-stopped
+
+  nghiem_product_service : 
+    build: 
+      context: ./product
+      dockerfile: Dockerfile
+    container_name : nghiem_product_service
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./product:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nghiem_rabbitmq
+      - nghiem_mongodb
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_PRODUCT_URI=${MONGODB_PRODUCT_URI}
+      - MONGODB_AUTH_URI=${MONGODB_AUTH_URI}
+      - MONGODB_ORDER_URI=${MONGODB_ORDER_URI}
+    restart: unless-stopped
+
+volumes:
+  nghiem_rabbitmq_data:
+  nghiem_mongodb_data:    # volume cho MongoDB

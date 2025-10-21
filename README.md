@@ -1,170 +1,112 @@
-# 🧩 EProject Phase 1 — Microservices with RabbitMQ and API Gateway
+# 🐇 Case Study: Microservices với RabbitMQ, API Gateway & JWT
 
-## 📘 Giới thiệu
-
-Dự án **EProject Phase 1** là hệ thống thương mại điện tử được thiết kế theo kiến trúc **Microservices**.
-Các thành phần chính bao gồm:
-
-- **API Gateway**: điều phối các yêu cầu đến đúng service.
-- **RabbitMQ**: trung gian giao tiếp giữa các service.
-- **User Service**, **Product Service**, **Order Service**: chịu trách nhiệm xử lý nghiệp vụ riêng biệt.
+Dự án minh họa cách xây dựng hệ thống **Microservices** trong Node.js, sử dụng:
+- 🐳 **Docker** để container hóa  
+- 🐇 **RabbitMQ** để giao tiếp giữa các service  
+- 🔐 **JWT** để xác thực người dùng  
+- 🚪 **API Gateway** để định tuyến yêu cầu  
 
 ---
 
-## ⚙️ 1. Cài đặt môi trường
+## ⚙️ 1. Cài đặt RabbitMQ trên Docker
 
-### **Yêu cầu hệ thống**
-
-- Node.js (v18+)
-- Docker Desktop
-- Postman (để test API)
-- Git
-
----
-
-## 🐇 2. Cài đặt RabbitMQ qua Docker
-
-### **Chạy lệnh sau để khởi tạo container RabbitMQ**
+Sử dụng lệnh này để khởi chạy RabbitMQ:
 
 ```bash
-docker run -d --name rabbitmq \
- -p 5672:5672 -p 15672:15672 \
- rabbitmq:4-management
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
 ```
 
-> ⚠️ **Lưu ý:**
->
-> - Truy cập giao diện quản trị tại: [http://localhost:15672](http://localhost:15672)
-> - Tài khoản mặc định: `guest` / `guest`
-> - Nếu muốn RabbitMQ hoạt động vĩnh viễn (không mất khi tắt máy), hãy thêm cờ volume:
->
-> ```bash
-> docker run -d --name rabbitmq \
-> -p 5672:5672 -p 15672:15672 \
-> -v rabbitmq_data:/var/lib/rabbitmq \
-> rabbitmq:4-management
-> ```
+> 🖥️ Giao diện quản lý: [http://localhost:15672](http://localhost:15672)  
+> 👤 Tài khoản mặc định: `guest` / `guest`
 
-📷 _Ảnh minh họa:_ <img src="./public/asset/setuprabbitmq.png" width="700">
+📸 *Ảnh minh họa:*  
+![RabbitMQ Setup](public/1.png)
 
 ---
 
-## 🧠 3. Thiết lập các Microservices
+## 🌐 2. Cấu hình lại API Gateway
 
-### **Bước 1. Clone project**
+Cập nhật đường dẫn định tuyến để API Gateway điều hướng đúng đến các service (User, Product, Order,...)
 
-```bash
-git clone <repository_url>
-cd EProject-Phase-1
-```
-
-### **Bước 2. Cài đặt dependencies**
-
-```bash
-npm install
-```
-
-### **Bước 3. Cấu hình môi trường**
-
-Tạo file `.env` cho từng service (ví dụ: `user-service`, `product-service`, `order-service`) với các biến:
-
-```
-PORT=xxxx
-MONGO_URI=mongodb+srv://...
-RABBITMQ_URL=amqp://localhost
-JWT_SECRET=your_secret_key
-```
-
-> 🚫 Không commit các file `.env`, `node_modules`, `.DS_Store` theo hướng dẫn trong file `EProject-Phase-1.docx`.
+📸 *Ảnh minh họa:*  
+![Chỉnh đường dẫn Gateway](public/2_chinh_duong_dan.png)
 
 ---
 
-## 🚪 4. Chạy toàn bộ hệ thống
+## 🔑 3. Thêm thông tin đăng nhập & ký JWT
 
-Khởi động tất cả microservices (User, Product, Order, Gateway) bằng các lệnh riêng:
+Cập nhật phần logic đăng nhập để tạo **token JWT** giúp xác thực người dùng.
 
-```bash
-cd api-gateway && npm start
-cd user-service && npm start
-cd product-service && npm start
-cd order-service && npm start
-```
-
-API Gateway sẽ điều phối các request đến đúng service tương ứng.
-📷 _Ảnh minh họa:_ <img src="./public/asset/setupapigateway.png">
+📸 *Ảnh minh họa:*  
+![Thêm JWT Sign](public/3.png)
 
 ---
 
-## 🧪 5. Kiểm thử chức năng với Postman
+## 🧩 4. Bổ sung các đoạn code phục vụ cho Case Study
 
-### **1️⃣ Đăng ký tài khoản**
+Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp RabbitMQ, v.v.
 
-**POST** `/auth/register`
-📷 _Ảnh minh họa:_ <img src="./public/asset/register.png">
-
-Kết quả trong database: <img src="./public/asset/databaseuser.png">
+📸 *Ảnh minh họa:*  
+![Thêm Code Case Study](public/4_them_cac_code_phuc_vu_cho_case_study.png)
 
 ---
 
-### **2️⃣ Đăng nhập và nhận token**
+## 🧪 5. Kiểm thử API với Postman
 
-**POST** `/auth/login`
-Sau khi đăng nhập thành công, hệ thống trả về **JWT Token**.
-📷 _Ảnh minh họa:_ <img src="./public/asset/login.png">
+### 🧍‍♂️ Đăng ký tài khoản
+- **Method:** `POST`
+- **Endpoint:** `/api/auth/register`
 
-Token này được dùng để xác thực các request tiếp theo.
-
----
-
-### **3️⃣ Thêm sản phẩm**
-
-**POST** `/product/add`
-Gửi token trong header `Authorization: Bearer <token>`
-
-📦 _Body ví dụ:_ <img src="./public/asset/bodyaddproduct.png">
-
-📷 _Kết quả trả về:_ <img src="./public/asset/ketquaaddproduct.png">
-
-📂 _Dữ liệu lưu trong database:_ <img src="./public/asset/databaseaddproduct.png">
+📸  
+![Test Register API](public/5_register_post_man.png)
 
 ---
 
-### **4️⃣ Tạo đơn hàng**
+### 🔐 Đăng nhập tài khoản
+- **Method:** `POST`
+- **Endpoint:** `/api/auth/login`
 
-**POST** `/order/create`
-Gửi token trong Headers và danh sách ID sản phẩm trong body:
-
-📋 _Header:_
-`Authorization: Bearer <token>`
-
-📋 _Body:_ <img src="./public/asset/ids.png" width="600">
-
-📷 _Kết quả trả về:_ <img src="./public/asset/ketquadathang.png">
-
-📂 _Dữ liệu trong database:_ <img src="./public/asset/databaseorder.png">
+📸  
+![Test Login API](public/6_login_post_man.png)
 
 ---
 
-## 📊 6. Kết quả đạt được
+### 🛒 Thêm sản phẩm
+- **Method:** `POST`
+- **Endpoint:** `/api/products`
 
-- Kết nối thành công giữa các microservice qua RabbitMQ.
-- API Gateway hoạt động đúng, định tuyến chính xác.
-- Chức năng đăng ký, đăng nhập, thêm sản phẩm, đặt hàng hoạt động ổn định.
-- Dữ liệu lưu trữ chính xác trong MongoDB.
+📸  
+![Test Add Product](public/7_add_product.png)
 
 ---
 
-## 📁 7. Cấu trúc thư mục (ví dụ)
+### 📦 Xem danh sách sản phẩm
+- **Method:** `GET`
+- **Endpoint:** `/api/products`
 
-```
-EProject-Phase-1/
-│
-├── api-gateway/
-├── user-service/
-├── product-service/
-├── order-service/
-├── public/
-│   └── asset/
-├── package.json
-└── README.md
-```
+📸  
+![Get All Products](public/8_get_more_product.png)
+
+---
+
+### 🧾 Tạo đơn hàng
+- **Method:** `POST`
+- **Endpoint:** `/api/orders`
+
+📸  
+![Create Order](public/9_create_order.png)
+
+---
+
+## 🚀 6. Kết luận
+
+Hệ thống đã được thiết lập thành công:
+- RabbitMQ hoạt động để giao tiếp giữa các service  
+- JWT đảm bảo xác thực người dùng  
+- API Gateway định tuyến chính xác  
+- Tất cả API hoạt động ổn định qua Postman ✅
+
+---
+
+🧑‍💻 **Tác giả:** NGUYỄN ĐỨC HUY 
+📅 **Cập nhật lần cuối:** 2025-10-09

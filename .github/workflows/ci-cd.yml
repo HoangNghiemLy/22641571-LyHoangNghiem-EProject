@@ -1,0 +1,61 @@
+name: CI/CD - Microservices Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Lấy code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Cài Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20" # dùng version Node bạn cần
+
+      # 2️⃣ Kiểm tra Docker
+      - name: Check Docker version
+        run: docker --version
+
+      # 3️⃣ Build tất cả Docker image theo docker-compose.yml
+      - name: Build Docker images
+        run: docker compose -f docker-compose.yml build
+
+      - name: Generate .env file for CI
+        run: |
+          echo "JWT_SECRET=${{ vars.JWT_SECRET }}" >> .env.ci
+          echo "MONGODB_PRODUCT_URI=${{ vars.MONGODB_PRODUCT_URI }}" >> .env.ci
+          echo "MONGODB_ORDER_URI=${{ vars.MONGODB_ORDER_URI }}" >> .env.ci
+          echo "MONGODB_AUTH_URI=${{ vars.MONGODB_AUTH_URI }}" >> .env.ci
+
+      # 6️⃣ Start containers
+      - name: Start containers
+        run: docker compose --env-file .env.ci -f docker-compose.yml up -d
+
+      # ngủ 1 chút để các container chạy cho xong ( các service cần để kết nối tới rabbitmq )
+      - name: Wait for containers to be ready
+        run: sleep 25
+
+      # 5️⃣ Kiểm tra container đang chạy
+      - name: list var to check
+        run: echo "hello ${{ vars.JWT_SECRET }} , ${{ vars.MONGODB_PRODUCT_URI }} , ${{ vars.MONGODB_ORDER_URI }}"
+
+      # 5️⃣ Kiểm tra container đang chạy
+      - name: List running containers
+        run: docker ps
+
+      # 7 Chạy file test trên product service
+      - name: Run File Test In Product Service
+        run: docker exec --env-file .env.ci nghiem_product_service npm test
+
+      # 6️⃣ Dừng container sau khi test
+      - name: Stop containers
+        run: docker compose -f docker-compose.yml down

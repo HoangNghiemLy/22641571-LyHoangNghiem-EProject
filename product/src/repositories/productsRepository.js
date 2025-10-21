@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Product = require("../models/product");
+const Product = require('../models/product')
 
 
 class ProductsRepository {
@@ -16,6 +16,11 @@ class ProductsRepository {
   async findAll() {
     const products = await Product.find().lean();
     return products;
+  }
+
+  async updateQuantityProduct(product, quantity) {
+    const products = await Product.updateOne({ _id: product.id }, { quantity: quantity });
+    return true;
   }
 }
 

@@ -8,12 +8,18 @@ function isAuthenticated(req, res, next) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if(!authHeader.startsWith("Bearer ")) {
+
+  // check type of token
+  if (!authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   // Extract the token from the header
-  const token = authHeader.split(" ")[1];
+
+  const arr = authHeader.split(" ");
+  const token = arr[1];
+  // const typeOfToken = arr[0];
+
 
   try {
     // Verify the token using the JWT library and the secret key

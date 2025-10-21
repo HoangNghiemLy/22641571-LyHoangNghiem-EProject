@@ -4,6 +4,7 @@ const config = require("./config");
 const MessageBroker = require("./utils/messageBroker");
 const productsRouter = require("./routes/productRoutes");
 require("dotenv").config();
+// const Product = require('./models/product')
 
 class App {
   constructor() {
@@ -33,11 +34,11 @@ class App {
   }
 
   setRoutes() {
-    this.app.use("/api/products", productsRouter);
+    this.app.use("/products/api/v1", productsRouter);
   }
 
-  setupMessageBroker() {
-    MessageBroker.connect();
+  async setupMessageBroker() {
+    await MessageBroker.connect();
   }
 
   start() {
