@@ -5,7 +5,7 @@ const authMiddleware = require("./middlewares/authMiddleware");
 const AuthController = require("./controllers/authController");
 const MessageBroker = require('./helpers/messageBroker');
 const User = require('./models/user')
-
+const bcrypt = require("bcryptjs"); // Thêm bcrypt để hash mật khẩu
 class App {
   constructor() {
     this.app = express();
