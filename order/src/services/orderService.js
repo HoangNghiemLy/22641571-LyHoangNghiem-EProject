@@ -14,7 +14,7 @@ class OrderService {
 
     async getOrder() {
         const rs = await this.orderRepository.getAllOrder();
-        const connection = await amqp.connect('amqp://guest:guest@huy_rabbitmq:5672');
+        const connection = await amqp.connect('amqp://guest:guest@nghiem_rabbitmq:5672');
         const channel = await connection.createChannel();
         this.check = false;
         this.dataGet = null;
@@ -66,7 +66,7 @@ class OrderService {
         try {
             const rs1 = await Order.updateOne({ _id: idOrder }, { status: 'cancled' });
 
-            const connection = await amqp.connect('amqp://guest:guest@huy_rabbitmq:5672');
+            const connection = await amqp.connect('amqp://guest:guest@nghiem_rabbitmq:5672');
             const channel = await connection.createChannel();
             // console.log(rs1)
 

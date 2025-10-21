@@ -1,10 +1,11 @@
 # 🐇 Case Study: Microservices với RabbitMQ, API Gateway & JWT
 
 Dự án minh họa cách xây dựng hệ thống **Microservices** trong Node.js, sử dụng:
-- 🐳 **Docker** để container hóa  
-- 🐇 **RabbitMQ** để giao tiếp giữa các service  
-- 🔐 **JWT** để xác thực người dùng  
-- 🚪 **API Gateway** để định tuyến yêu cầu  
+
+- 🐳 **Docker** để container hóa
+- 🐇 **RabbitMQ** để giao tiếp giữa các service
+- 🔐 **JWT** để xác thực người dùng
+- 🚪 **API Gateway** để định tuyến yêu cầu
 
 ---
 
@@ -19,7 +20,7 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-manag
 > 🖥️ Giao diện quản lý: [http://localhost:15672](http://localhost:15672)  
 > 👤 Tài khoản mặc định: `guest` / `guest`
 
-📸 *Ảnh minh họa:*  
+📸 _Ảnh minh họa:_  
 ![RabbitMQ Setup](public/1.png)
 
 ---
@@ -28,7 +29,7 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-manag
 
 Cập nhật đường dẫn định tuyến để API Gateway điều hướng đúng đến các service (User, Product, Order,...)
 
-📸 *Ảnh minh họa:*  
+📸 _Ảnh minh họa:_  
 ![Chỉnh đường dẫn Gateway](public/2_chinh_duong_dan.png)
 
 ---
@@ -37,7 +38,7 @@ Cập nhật đường dẫn định tuyến để API Gateway điều hướng 
 
 Cập nhật phần logic đăng nhập để tạo **token JWT** giúp xác thực người dùng.
 
-📸 *Ảnh minh họa:*  
+📸 _Ảnh minh họa:_  
 ![Thêm JWT Sign](public/3.png)
 
 ---
@@ -46,7 +47,7 @@ Cập nhật phần logic đăng nhập để tạo **token JWT** giúp xác th�
 
 Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp RabbitMQ, v.v.
 
-📸 *Ảnh minh họa:*  
+📸 _Ảnh minh họa:_  
 ![Thêm Code Case Study](public/4_them_cac_code_phuc_vu_cho_case_study.png)
 
 ---
@@ -54,6 +55,7 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ## 🧪 5. Kiểm thử API với Postman
 
 ### 🧍‍♂️ Đăng ký tài khoản
+
 - **Method:** `POST`
 - **Endpoint:** `/api/auth/register`
 
@@ -63,6 +65,7 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ---
 
 ### 🔐 Đăng nhập tài khoản
+
 - **Method:** `POST`
 - **Endpoint:** `/api/auth/login`
 
@@ -72,6 +75,7 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ---
 
 ### 🛒 Thêm sản phẩm
+
 - **Method:** `POST`
 - **Endpoint:** `/api/products`
 
@@ -81,6 +85,7 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ---
 
 ### 📦 Xem danh sách sản phẩm
+
 - **Method:** `GET`
 - **Endpoint:** `/api/products`
 
@@ -90,6 +95,7 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ---
 
 ### 🧾 Tạo đơn hàng
+
 - **Method:** `POST`
 - **Endpoint:** `/api/orders`
 
@@ -101,12 +107,12 @@ Thêm các chức năng hỗ trợ liên quan đến microservices, giao tiếp 
 ## 🚀 6. Kết luận
 
 Hệ thống đã được thiết lập thành công:
-- RabbitMQ hoạt động để giao tiếp giữa các service  
-- JWT đảm bảo xác thực người dùng  
-- API Gateway định tuyến chính xác  
+
+- RabbitMQ hoạt động để giao tiếp giữa các service
+- JWT đảm bảo xác thực người dùng
+- API Gateway định tuyến chính xác
 - Tất cả API hoạt động ổn định qua Postman ✅
 
 ---
 
-🧑‍💻 **Tác giả:** NGUYỄN ĐỨC HUY 
-📅 **Cập nhật lần cuối:** 2025-10-09
+10-09
