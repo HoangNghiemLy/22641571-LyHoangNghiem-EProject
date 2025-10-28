@@ -11,10 +11,6 @@ class UserRepository {
   async getUserByUsername(username) {
     return await User.findOne({ username });
   }
-
-  async getUserById(id) {
-    return await User.findOne({ _id: id }).lean();
-  }
 }
 
 module.exports = UserRepository;

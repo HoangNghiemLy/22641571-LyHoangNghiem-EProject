@@ -40,7 +40,6 @@ class OrderService {
                 })
 
                 while (this.check == false) {
-                    // console.log('huhu đợi xíu')
                     await new Promise(resolve => setTimeout(resolve, 1000)); // wait for 1 second before checking
                 }
 

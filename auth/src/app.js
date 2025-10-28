@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const config = require("./config");
 const authMiddleware = require("./middlewares/authMiddleware");
 const AuthController = require("./controllers/authController");
-const MessageBroker = require('./helpers/messageBroker');
-const User = require('./models/user')
 const bcrypt = require("bcryptjs"); // Thêm bcrypt để hash mật khẩu
+const User = require('./models/user');
+
 class App {
   constructor() {
     this.app = express();
@@ -13,8 +13,21 @@ class App {
     this.connectDB();
     this.setMiddlewares();
     this.setRoutes();
-    this.setUpMessageQueue()
   }
+
+  async connectDB() {
+    await mongoose.connect(config.mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("MongoDB connected");
+  }
+
+  async disconnectDB() {
+    await mongoose.disconnect();
+    console.log("MongoDB disconnected");
+  }
+
   async seedDB() {
     try {
       // Kiểm tra xem tài khoản testuser đã tồn tại chưa
@@ -38,23 +51,6 @@ class App {
     }
   }
 
-  async connectDB() {
-    await mongoose.connect(config.mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    console.log("MongoDB connected");
-  }
-
-  async disconnectDB() {
-    await mongoose.disconnect();
-    console.log("MongoDB disconnected");
-  }
-
-  async setUpMessageQueue() {
-    await MessageBroker.setUpConnection()
-  }
-
   setMiddlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
@@ -63,7 +59,7 @@ class App {
   setRoutes() {
     this.app.post("/auth/api/v1/login", (req, res) => this.authController.login(req, res));
     this.app.post("/auth/api/v1/register", (req, res) => this.authController.register(req, res));
-    this.app.get("/auth/api/v1/dashboard", authMiddleware, this.authController.getProfile);
+    this.app.get("/auth/api/v1/dashboard", authMiddleware, (req, res) => res.json({ message: "Welcome to dashboard" }));
   }
 
   async start() {
@@ -75,8 +71,6 @@ class App {
     await mongoose.disconnect();
     this.server.close();
     console.log("Server stopped");
-    
-    
   }
 }
 
